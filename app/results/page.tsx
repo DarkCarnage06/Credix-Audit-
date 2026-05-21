@@ -1,14 +1,31 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { useAuditStore } from "@/lib/store"
-import { AI_TOOLS } from "@/lib/tools"
+import { runAudit } from "@/lib/audit-engine"
+
+const borderColor = (action: string) => {
+  switch (action) {
+    case "remove":
+    case "switch":
+      return "border-rose-500/80"
+    case "downgrade":
+      return "border-amber-400/80"
+    default:
+      return "border-emerald-500/70"
+  }
+}
 
 export default function Page() {
   const [loading, setLoading] = useState(true)
+  const [shareStatus, setShareStatus] = useState<string | null>(null)
+  const [email, setEmail] = useState("")
+  const teamSize = useAuditStore((state) => state.teamSize)
+  const useCase = useAuditStore((state) => state.useCase)
   const toolEntries = useAuditStore((state) => state.toolEntries)
 
   useEffect(() => {
@@ -16,61 +33,143 @@ export default function Page() {
     return () => window.clearTimeout(timeout)
   }, [])
 
-  const getToolName = (toolId: string) => AI_TOOLS.find((tool) => tool.id === toolId)?.name ?? toolId
-  const getPlanName = (toolId: string, planId: string) =>
-    AI_TOOLS.find((tool) => tool.id === toolId)?.plans.find((plan) => plan.id === planId)?.name ?? planId
+  const auditResult = useMemo(() => runAudit({ toolEntries, teamSize, useCase }), [toolEntries, teamSize, useCase])
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setShareStatus("Link copied!")
+      window.setTimeout(() => setShareStatus(null), 2400)
+    } catch {
+      setShareStatus("Unable to copy link")
+    }
+  }
 
   return (
     <main className="min-h-[calc(100vh-5rem)] bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <section className="rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-10 shadow-[0_40px_120px_rgba(15,23,42,0.35)] text-center">
-          <div className="mx-auto flex max-w-2xl flex-col items-center gap-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80">
-              <div className="h-7 w-7 animate-spin rounded-full border-2 border-slate-500 border-t-transparent" />
-            </div>
-            <p className="text-sm uppercase tracking-[0.32em] text-primary">Calculation in progress</p>
-            <h1 className="text-3xl font-semibold sm:text-4xl">Calculating your audit...</h1>
-            <p className="max-w-2xl text-slate-400">
-              We are reviewing your subscriptions and spend data. Your results will be ready in a moment.
-            </p>
+      <div className="mx-auto flex max-w-6xl flex-col gap-8">
+        <section className="rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-10 shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+          <div className="flex flex-col gap-6 text-center">
+            {auditResult.isAlreadyOptimal ? (
+              <>
+                <p className="text-sm uppercase tracking-[0.32em] text-emerald-300">Optimized AI spend</p>
+                <h1 className="text-4xl font-semibold text-slate-100 sm:text-5xl">
+                  You're spending well 👍
+                </h1>
+                <p className="mx-auto max-w-2xl text-lg text-slate-400">
+                  Your AI stack is already optimized for your current team and use cases.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm uppercase tracking-[0.32em] text-emerald-300">Spend optimization</p>
+                <h1 className="text-5xl font-semibold text-emerald-300 sm:text-6xl">
+                  You could save {`$${auditResult.totalMonthlySavings.toLocaleString()}`}/month
+                </h1>
+                <p className="text-2xl text-slate-200">
+                  {`$${auditResult.totalAnnualSavings.toLocaleString()}`}/year
+                </p>
+                <p className="mx-auto max-w-2xl text-lg text-slate-400">
+                  You currently spend {`$${auditResult.totalCurrentSpend.toLocaleString()}/month`} across your AI stack, projected to {`$${auditResult.totalProjectedSpend.toLocaleString()}/month`} after recommendations.
+                </p>
+              </>
+            )}
           </div>
         </section>
 
-        <section className="grid gap-6">
-          <div className="rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-8 shadow-[0_35px_90px_rgba(15,23,42,0.25)]">
-            <h2 className="text-xl font-semibold">What you entered</h2>
-            <div className="mt-6 grid gap-4">
-              {toolEntries.length === 0 ? (
-                <p className="text-slate-400">No tools were added yet.</p>
-              ) : (
-                toolEntries.map((entry) => (
-                  <Card key={entry.id} className="p-4">
-                    <div className="grid gap-2">
-                      <p className="text-sm text-slate-400">{getToolName(entry.toolId)}</p>
-                      <p className="text-lg font-semibold text-slate-100">{getPlanName(entry.toolId, entry.planId)}</p>
-                      <div className="flex flex-wrap gap-3 text-sm text-slate-400">
-                        <span>{entry.seats} seat{entry.seats === 1 ? "" : "s"}</span>
-                        <span>${entry.monthlySpend.toLocaleString()} / month</span>
-                      </div>
+        <section className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
+          <div className="space-y-6">
+            {auditResult.recommendations.map((recommendation) => (
+              <Card
+                key={recommendation.toolId}
+                className={`rounded-[1.75rem] border ${borderColor(recommendation.recommendedAction)} bg-slate-900/90 p-6 shadow-[0_25px_60px_rgba(15,23,42,0.3)]`}
+              >
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="space-y-3">
+                    <p className="text-sm uppercase tracking-[0.26em] text-slate-500">{recommendation.toolName}</p>
+                    <h2 className="text-2xl font-semibold text-slate-100">
+                      {recommendation.currentPlanName}
+                    </h2>
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-400">
+                      <span>{`$${recommendation.currentMonthlySpend.toLocaleString()}/month`}</span>
+                      <span className="text-slate-600">•</span>
+                      <span>{recommendation.recommendedAction === "remove" ? "Remove tool" : recommendation.recommendedPlanName ? `${recommendation.recommendedAction === "switch" ? "Switch to" : recommendation.recommendedAction === "downgrade" ? "Move to" : "Keep"} ${recommendation.recommendedPlanName}` : recommendation.recommendedAction}</span>
                     </div>
-                  </Card>
-                ))
-              )}
-            </div>
+                  </div>
+                  <div className="rounded-3xl bg-slate-950/80 px-5 py-4 text-right ring-1 ring-slate-800">
+                    <p className="text-sm uppercase tracking-[0.28em] text-slate-500">Monthly savings</p>
+                    <p className="mt-2 text-3xl font-semibold text-emerald-300">{`$${recommendation.monthlySavings.toLocaleString()}`}</p>
+                    <p className="text-sm text-slate-400">{`$${recommendation.annualSavings.toLocaleString()}/year`}</p>
+                  </div>
+                </div>
+                <p className="mt-5 text-sm leading-6 text-slate-300">{recommendation.reason}</p>
+              </Card>
+            ))}
           </div>
 
-          <div className="rounded-[2rem] border border-slate-800/80 bg-slate-950/90 p-8 shadow-[0_35px_90px_rgba(15,23,42,0.25)]">
-            <h2 className="text-2xl font-semibold">Audit coming soon</h2>
-            <p className="mt-3 max-w-2xl text-slate-400">
-              This placeholder confirms your tools are saved and the audit engine will be built next. The final report will compare your spend against market benchmarks and identify savings opportunities.
-            </p>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <Link href="/audit">
-                <Button variant="outline">Edit audit details</Button>
-              </Link>
-              <Button onClick={() => window.location.reload()}>{loading ? "Refreshing..." : "Refresh status"}</Button>
-            </div>
-          </div>
+          <aside className="space-y-6">
+            {auditResult.isHighSavings && (
+              <Card className="rounded-[1.75rem] bg-slate-900/95 p-6 shadow-[0_35px_90px_rgba(15,23,42,0.35)]">
+                <div className="space-y-4">
+                  <p className="text-sm uppercase tracking-[0.26em] text-emerald-300">Credex advantage</p>
+                  <h2 className="text-3xl font-semibold text-white">Credex can save you even more</h2>
+                  <p className="text-slate-400">
+                    Get the same AI tools at 20-40% off through Credex discounted credits.
+                  </p>
+                  <Button asChild className="w-full">
+                    <a href="https://credex.rocks" target="_blank" rel="noreferrer">
+                      Book a Free Consultation
+                    </a>
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {auditResult.isAlreadyOptimal && (
+              <Card className="rounded-[1.75rem] bg-slate-900/95 p-6 shadow-[0_35px_90px_rgba(15,23,42,0.35)]">
+                <div className="space-y-4">
+                  <p className="text-sm uppercase tracking-[0.26em] text-slate-300">Stay ahead</p>
+                  <h2 className="text-2xl font-semibold text-white">Notify me when new optimizations apply to your stack</h2>
+                  <div className="grid gap-4">
+                    <Input
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="Your email"
+                      className="bg-slate-950 text-slate-100 placeholder:text-slate-500"
+                    />
+                    <Button className="w-full">Subscribe</Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            <Card className="rounded-[1.75rem] bg-slate-900/95 p-6 shadow-[0_35px_90px_rgba(15,23,42,0.35)]">
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-white">Share your audit</h2>
+                <p className="text-slate-400">
+                  Copy a link to share this recommendation summary with your team.
+                </p>
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button className="w-full" onClick={handleShare}>
+                    Share your audit
+                  </Button>
+                  {shareStatus ? <span className="text-slate-300">{shareStatus}</span> : null}
+                </div>
+              </div>
+            </Card>
+
+            <Card className="rounded-[1.75rem] bg-slate-950/90 p-6 shadow-[0_35px_90px_rgba(15,23,42,0.25)]">
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold text-slate-100">Re-run audit</h2>
+                <p className="text-slate-400">
+                  Edit your inputs and rerun the AI spend review to capture the latest pricing and team changes.
+                </p>
+                <Link href="/audit">
+                  <Button className="w-full">Re-run audit</Button>
+                </Link>
+              </div>
+            </Card>
+          </aside>
         </section>
       </div>
     </main>
