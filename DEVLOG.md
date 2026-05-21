@@ -9,3 +9,15 @@
 **Blockers / what I'm stuck on:** No Anthropic API key yet — will need to add $5 credits or use fallback template for the AI summary feature.
 
 **Plan for tomorrow:** Build the audit engine — the rule-based logic that evaluates each tool entry and outputs recommendations + savings numbers.
+
+## Day 2 — 2026-05-21
+
+**Hours worked:** 4
+
+**What I did:** Built the core audit engine (audit-engine.ts) with rule-based logic for all 8 AI tools — Cursor, GitHub Copilot, Claude, ChatGPT, Windsurf, Gemini, Anthropic API, OpenAI API. Implemented overlap detection (e.g. Cursor + Copilot redundancy), plan downsizing rules based on seat count, and use-case fit checks. Built the real results page with per-tool recommendation cards, color-coded by action type, savings hero section, and Credex CTA for high-savings audits. Set up Jest with ts-jest and wrote 8 passing tests. Fixed a duplicate React key bug on the results page.
+
+**What I learned:** Keeping the audit engine as pure TypeScript functions with no React dependencies makes testing extremely clean. Also learned that React key warnings don't break the UI but will cause silent rendering bugs — good to catch early.
+
+**Blockers / what I'm stuck on:** Pricing numbers need to be verified against official vendor pages before submission. Will do this in PRICING_DATA.md on Day 6.
+
+**Plan for tomorrow:** Set up Vercel Postgres (Neon), build shareable audit URLs with unique IDs stored in the database, add Open Graph meta tags for link previews.
