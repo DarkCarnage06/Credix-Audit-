@@ -79,9 +79,9 @@ export default function Page() {
 
         <section className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
           <div className="space-y-6">
-            {auditResult.recommendations.map((recommendation) => (
+            {auditResult.recommendations.map((recommendation, index) => (
               <Card
-                key={recommendation.toolId}
+                key={`${recommendation.toolId}-${index}`}
                 className={`rounded-[1.75rem] border ${borderColor(recommendation.recommendedAction)} bg-slate-900/90 p-6 shadow-[0_25px_60px_rgba(15,23,42,0.3)]`}
               >
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
