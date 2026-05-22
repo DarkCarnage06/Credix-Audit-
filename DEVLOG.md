@@ -21,3 +21,15 @@
 **Blockers / what I'm stuck on:** Pricing numbers need to be verified against official vendor pages before submission. Will do this in PRICING_DATA.md on Day 6.
 
 **Plan for tomorrow:** Set up Vercel Postgres (Neon), build shareable audit URLs with unique IDs stored in the database, add Open Graph meta tags for link previews.
+
+## Day 3 — 2026-05-22
+
+**Hours worked:** 4
+
+**What I did:** Set up Neon Postgres database connected via Vercel. Created drizzle-orm schema with audits and leads tables. Built POST /api/audits and GET /api/audits/[id] API routes. Each audit now gets a unique nanoid, stored in the database. Built the public shareable /audit/[id] page that strips PII and shows tools and savings. Added Open Graph and Twitter card meta tags. Updated results page to save audit to DB and display the shareable URL.
+
+**What I learned:** Vercel + Neon integration is seamless — env variables get injected automatically. nanoid is much simpler than UUID for short shareable IDs.
+
+**Blockers / what I'm stuck on:** Need to verify the OG image shows correctly when sharing on Twitter/LinkedIn — will check this after deploy.
+
+**Plan for tomorrow:** Build AI-generated personalized summary using Anthropic API with graceful fallback, and build the lead capture form with email storage.
