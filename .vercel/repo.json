@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_nswW4aSwfcGNybiweRzz1RnErUsc",
+      "name": "credix-audit",
+      "directory": ".",
+      "orgId": "team_LN4Xxi2JFOW56bD3dmP5vBrZ"
+    }
+  ]
+}
