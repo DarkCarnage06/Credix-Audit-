@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
 import { AuditResultsView } from "@/components/audit-results-view"
+import { AuditSummaryCard } from "@/components/audit-summary-card"
 import { Button } from "@/components/ui/button"
 import { getAuditById } from "@/lib/audits"
 
@@ -65,12 +66,17 @@ export default async function PublicAuditPage({ params }: PageProps) {
 
   return (
     <main className="min-h-[calc(100vh-5rem)] bg-slate-950 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
-      <AuditResultsView
-        auditResult={auditResult}
-        showEmailCapture={false}
-        showRerun={false}
-        publicShareUrl={publicShareUrl}
-      />
+      <div className="mx-auto flex max-w-6xl flex-col gap-8">
+        {audit.summary ? (
+          <AuditSummaryCard summary={audit.summary} isAiGenerated={audit.isAiGenerated} />
+        ) : null}
+
+        <AuditResultsView
+          auditResult={auditResult}
+          showRerun={false}
+          publicShareUrl={publicShareUrl}
+        />
+      </div>
       <div className="mx-auto mt-8 flex max-w-6xl justify-center">
         <Button asChild variant="outline">
           <Link href="/audit">Run your own audit</Link>

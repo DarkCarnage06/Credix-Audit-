@@ -34,5 +34,8 @@ export async function runMigrations() {
     )
   `
 
+  await sql`ALTER TABLE audits ADD COLUMN IF NOT EXISTS summary TEXT`
+  await sql`ALTER TABLE audits ADD COLUMN IF NOT EXISTS is_ai_generated BOOLEAN DEFAULT false`
+
   migrated = true
 }

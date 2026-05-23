@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,8 @@ type AuditResultsViewProps = {
   onShare?: () => void
   publicShareUrl?: string
   showRerun?: boolean
+  afterHero?: ReactNode
+  afterRecommendations?: ReactNode
 }
 
 export function AuditResultsView({
@@ -42,6 +45,8 @@ export function AuditResultsView({
   onShare,
   publicShareUrl,
   showRerun = true,
+  afterHero,
+  afterRecommendations,
 }: AuditResultsViewProps) {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8">
@@ -71,6 +76,8 @@ export function AuditResultsView({
           )}
         </div>
       </section>
+
+      {afterHero}
 
       <section className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr]">
         <div className="space-y-6">
@@ -106,6 +113,8 @@ export function AuditResultsView({
               <p className="mt-5 text-sm leading-6 text-slate-300">{recommendation.reason}</p>
             </Card>
           ))}
+
+          {afterRecommendations}
         </div>
 
         <aside className="space-y-6">

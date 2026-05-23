@@ -10,6 +10,8 @@ export type StoredAudit = AuditResult & {
   teamSize: number
   useCase: AuditInput["useCase"]
   toolEntries: ToolEntry[]
+  summary: string | null
+  isAiGenerated: boolean
   createdAt: Date | null
 }
 
@@ -43,6 +45,8 @@ function mapRow(row: typeof audits.$inferSelect): StoredAudit | null {
     totalProjectedSpend,
     isAlreadyOptimal: row.isAlreadyOptimal ?? false,
     isHighSavings: row.isHighSavings ?? false,
+    summary: row.summary,
+    isAiGenerated: row.isAiGenerated ?? false,
     createdAt: row.createdAt,
   }
 }
@@ -60,7 +64,9 @@ export async function getAuditById(id: string): Promise<StoredAudit | null> {
 export async function saveAudit(
   id: string,
   input: AuditInput,
-  result: AuditResult
+  result: AuditResult,
+  summary: string,
+  isAiGenerated: boolean
 ): Promise<void> {
   await runMigrations()
 
@@ -75,5 +81,7 @@ export async function saveAudit(
     totalCurrentSpend: result.totalCurrentSpend,
     isAlreadyOptimal: result.isAlreadyOptimal,
     isHighSavings: result.isHighSavings,
+    summary,
+    isAiGenerated,
   })
 }

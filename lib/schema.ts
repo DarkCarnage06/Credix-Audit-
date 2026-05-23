@@ -12,6 +12,8 @@ export const audits = pgTable("audits", {
   totalCurrentSpend: integer("total_current_spend"),
   isAlreadyOptimal: boolean("is_already_optimal"),
   isHighSavings: boolean("is_high_savings"),
+  summary: text("summary"),
+  isAiGenerated: boolean("is_ai_generated").default(false),
 })
 
 export const leads = pgTable("leads", {

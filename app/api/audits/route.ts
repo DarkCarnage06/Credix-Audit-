@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 
 import { runAudit, type AuditInput } from "@/lib/audit-engine"
 import { saveAudit } from "@/lib/audits"
+import { generateAuditSummary } from "@/lib/summary"
 
 export async function POST(request: Request) {
   try {
@@ -27,11 +28,21 @@ export async function POST(request: Request) {
     }
 
     const auditResult = runAudit(input)
+    const { summary, isAiGenerated } = await generateAuditSummary(
+      auditResult,
+      input.useCase,
+      input.teamSize
+    )
     const auditId = nanoid(10)
 
-    await saveAudit(auditId, input, auditResult)
+    await saveAudit(auditId, input, auditResult, summary, isAiGenerated)
 
-    return NextResponse.json({ auditId, ...auditResult })
+    return NextResponse.json({
+      auditId,
+      summary,
+      isAiGenerated,
+      ...auditResult,
+    })
   } catch (error) {
     console.error("POST /api/audits failed:", error)
     return NextResponse.json({ error: "Failed to save audit" }, { status: 500 })
