@@ -46,3 +46,16 @@ Append this exact content to DEVLOG.md at the root. Do not overwrite anything:
 **Blockers / what I'm stuck on:** Still using dummy Anthropic API key so summaries are template-based. Need real key for AI generated summaries.
 
 **Plan for tomorrow:** Deploy to Vercel, run Lighthouse audit, fix any performance or accessibility issues, start writing all markdown documentation files.
+Append this exact content to DEVLOG.md at the root. Do not overwrite anything:
+
+## Day 5 — 2026-05-24
+
+**Hours worked:** 3
+
+**What I did:** Fixed Vercel deployment issue caused by a nested git submodule (credix-audit folder had its own .git). Removed it and redeployed. Reconnected Neon database and all environment variables to the new Vercel project. Verified full end-to-end flow works in production — audit form, results page, summary card, lead capture form, shareable URLs. Ran Lighthouse audit: Performance 93, Accessibility 96, Best Practices 100 — all above required thresholds.
+
+**What I learned:** Nested git repositories cause silent deployment failures on Vercel. Always check for .git folders inside subfolders before pushing.
+
+**Blockers / what I'm stuck on:** SEO score is 60 — not a requirement but worth improving. Will add meta tags on Day 6.
+
+**Plan for tomorrow:** Write all required markdown documentation files — ARCHITECTURE.md, GTM.md, ECONOMICS.md, PRICING_DATA.md, REFLECTION.md, LANDING_COPY.md, METRICS.md, TESTS.md. Also set up GitHub Actions CI workflow.
