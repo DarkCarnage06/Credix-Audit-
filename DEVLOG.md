@@ -33,3 +33,16 @@
 **Blockers / what I'm stuck on:** Need to verify the OG image shows correctly when sharing on Twitter/LinkedIn — will check this after deploy.
 
 **Plan for tomorrow:** Build AI-generated personalized summary using Anthropic API with graceful fallback, and build the lead capture form with email storage.
+Append this exact content to DEVLOG.md at the root. Do not overwrite anything:
+
+## Day 4 — 2026-05-23
+
+**Hours worked:** 5
+
+**What I did:** Built AI-generated personalized summary using Anthropic SDK with graceful template fallback when API key is unavailable. Built lead capture form with email, company name, and role fields. Added honeypot spam protection and duplicate submission check (409). Set up Resend for transactional email — users get their audit report emailed with a link to the shareable URL. Fixed a major rendering bug on the results page where components were disappearing — root cause was async state updates causing re-renders that wiped component state. Fixed by computing auditResult synchronously from the Zustand store and using a useRef flag to prevent duplicate API saves.
+
+**What I learned:** Computing derived state synchronously instead of asynchronously eliminates an entire class of race condition bugs. useRef is the right tool to prevent useEffect from firing twice in React strict mode.
+
+**Blockers / what I'm stuck on:** Still using dummy Anthropic API key so summaries are template-based. Need real key for AI generated summaries.
+
+**Plan for tomorrow:** Deploy to Vercel, run Lighthouse audit, fix any performance or accessibility issues, start writing all markdown documentation files.
