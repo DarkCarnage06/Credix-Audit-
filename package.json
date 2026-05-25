@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "private": true,
-  "scripts": {
+ "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -48,7 +48,6 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.2.1",
     "ts-jest": "^29.4.11",
-    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
 }
