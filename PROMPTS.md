@@ -5,6 +5,16 @@
 Used in `src/lib/summary.ts` to generate the personalized audit summary.
 
 ### Final Prompt
+You are an AI spend analyst. Write a personalized 80-100 word audit summary for a startup.
+Team size: {teamSize}
+Primary use case: {useCase}
+Current monthly AI spend: ${totalCurrentSpend}
+Potential monthly savings: ${totalMonthlySavings}
+Annual savings: ${totalAnnualSavings}
+Already optimal: {isAlreadyOptimal}
+Number of recommendations: {recommendationCount}
+Top recommendation: {topRecommendationReason}
+Write in second person ("Your team...", "You're..."). Be specific with numbers. Be direct and honest. No fluff. If already optimal, acknowledge that genuinely.
 ### Why I wrote it this way
 
 - Second person ("Your team") makes the summary feel personal and actionable
