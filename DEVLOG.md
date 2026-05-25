@@ -59,3 +59,14 @@ Append this exact content to DEVLOG.md at the root. Do not overwrite anything:
 **Blockers / what I'm stuck on:** SEO score is 60 — not a requirement but worth improving. Will add meta tags on Day 6.
 
 **Plan for tomorrow:** Write all required markdown documentation files — ARCHITECTURE.md, GTM.md, ECONOMICS.md, PRICING_DATA.md, REFLECTION.md, LANDING_COPY.md, METRICS.md, TESTS.md. Also set up GitHub Actions CI workflow.
+## Day 6 — 2026-05-25
+
+**Hours worked:** 5
+
+**What I did:** Wrote all required markdown documentation files — PRICING_DATA.md, PROMPTS.md, ARCHITECTURE.md, GTM.md, ECONOMICS.md, LANDING_COPY.md, METRICS.md, TESTS.md, REFLECTION.md, USER_INTERVIEWS.md. Set up GitHub Actions CI workflow. Fixed Jest configuration — package.json was missing the test script, jest.config.ts was missing ts-node dependency, and module path mapper was pointing to wrong directory. All 8 audit engine tests now passing in CI.
+
+**What I learned:** Jest with ts-jest needs ts-node explicitly installed when using a TypeScript config file. Also learned that moduleNameMapper paths must match your actual folder structure, not assumptions about src/ layout.
+
+**Blockers / what I'm stuck on:** CI lint step may still fail depending on ESLint config — will verify tomorrow.
+
+**Plan for tomorrow:** Final day — verify CI is fully green, add screenshots to README, do a final end-to-end test on production, write Day 7 devlog entry, and submit.
