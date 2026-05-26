@@ -9,9 +9,9 @@ Find out if your startup is overpaying for AI tools. Free 2-minute audit for tea
 A free web app that audits your AI tool stack and tells you exactly where you're overspending — with specific dollar savings, defensible reasoning, and a shareable report URL.
 
 ## Screenshots
+## Demo
 
-> Add 3 screenshots here — homepage, audit form, results page
-> You can use a Loom or YouTube link for a 30-second screen recording instead
+[▶ Watch 30-second demo](https://www.loom.com/share/edfde6bfead246339de698b264dd78cc)
 
 ## Quick Start
 
